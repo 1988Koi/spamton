@@ -1,12 +1,13 @@
 FROM node:20
+
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
 
 COPY . .
-
 RUN npm run build
 
-# Rodar JS compilado
+EXPOSE 4000
+
 CMD ["node", "dist/index.js"]
