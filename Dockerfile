@@ -2,14 +2,13 @@ FROM node:20
 
 WORKDIR /app
 
-# IM GONNA KILL MYSELKG!!!!
 RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 RUN npm install
 
+RUN npm install -g ts-node typescript tsconfig-paths
+
 COPY . .
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["ts-node", "-r", "tsconfig-paths/register", "src/index.ts"]
