@@ -12,42 +12,49 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// serve static frontend demo (single file)
-app.use("/", express.static(path.join(__dirname, "public")));
+// === Servir frontend estático ===
+// O caminho aponta para a pasta "public" dentro de "dist"
+app.use(express.static(path.join(__dirname, "public")));
 
-// Swagger
+// === Swagger ===
 setupSwagger(app);
 
-// Rotas
+// === Rotas da API ===
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 
-// Health check
+// === Health check ===
 app.get("/api/health", (req, res) => res.json({ ok: true }));
+
+// === Rota fallback (para SPA / frontend) ===
+// Qualquer rota que não seja /api/... vai mandar o index.html
+app.get("*", (_, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 const PORT = Number(process.env.PORT || 4000);
 
 AppDataSource.initialize()
   .then(async () => {
-    console.log("Database connected");
+    console.log("✅ Database connected");
 
-    // --- Seed demo products ---
+    // Seed demo products
     const productRepo = AppDataSource.getRepository(Product);
-    const productCount = await productRepo.count();
-    if (productCount === 0) {
+    const count = await productRepo.count();
+    if (count === 0) {
       await productRepo.save([
         { name: "Produto Demo 1", description: "Descrição 1", price: 10.5, stock: 10 },
         { name: "Produto Demo 2", description: "Descrição 2", price: 29.99, stock: 5 }
       ]);
-      console.log("Seeded demo products");
+      console.log("🌱 Seeded demo products");
     }
 
     app.listen(PORT, () => {
-      console.log(`Server listening on port ${PORT}`);
-      console.log(`Swagger: http://localhost:${PORT}/api/docs`);
-      console.log(`Frontend demo: http://localhost:${PORT}/`);
+      console.log(`🚀 Server listening on port ${PORT}`);
+      console.log(`📘 Swagger: http://localhost:${PORT}/api/docs`);
+      console.log(`🖥️ Frontend: http://localhost:${PORT}/`);
     });
   })
   .catch(err => {
-    console.error("Error during Data Source initialization:", err);
+    console.error("❌ Error during Data Source initialization:", err);
   });
