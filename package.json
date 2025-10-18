@@ -2,10 +2,10 @@
   "name": "store-backend",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "dist/middleware/index.html",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc && cpx \"src/public/**/*\" dist/public",
+    "build": "tsc",
     "start": "node dist/index.js",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "migration:generate": "npm run typeorm -- migration:generate --dataSource ./src/data-source.ts -n",
