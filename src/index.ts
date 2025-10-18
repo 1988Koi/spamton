@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -8,12 +9,12 @@ import { setupSwagger } from "./swagger";
 import { AppDataSource } from "./data-source";
 import { Product } from "./entities/Product";
 
+// === App ===
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
 // === Servir frontend estático ===
-// O caminho aponta para a pasta "public" dentro de "dist"
 app.use(express.static(path.join(__dirname, "public")));
 
 // === Swagger ===
@@ -24,16 +25,17 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 
 // === Health check ===
-app.get("/api/health", (req, res) => res.json({ ok: true }));
+app.get("/api/health", (_, res) => res.json({ ok: true }));
 
-// === Rota fallback (para SPA / frontend) ===
-// Qualquer rota que não seja /api/... vai mandar o index.html
+// === Rota fallback (SPA / frontend) ===
 app.get("*", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// === Porta ===
 const PORT = Number(process.env.PORT || 4000);
 
+// === Inicializar DB e start do servidor ===
 AppDataSource.initialize()
   .then(async () => {
     console.log("✅ Database connected");
@@ -44,17 +46,18 @@ AppDataSource.initialize()
     if (count === 0) {
       await productRepo.save([
         { name: "Produto Demo 1", description: "Descrição 1", price: 10.5, stock: 10 },
-        { name: "Produto Demo 2", description: "Descrição 2", price: 29.99, stock: 5 }
+        { name: "Produto Demo 2", description: "Descrição 2", price: 29.99, stock: 5 },
       ]);
       console.log("🌱 Seeded demo products");
     }
 
+    // Start server
     app.listen(PORT, () => {
       console.log(`🚀 Server listening on port ${PORT}`);
       console.log(`📘 Swagger: http://localhost:${PORT}/api/docs`);
       console.log(`🖥️ Frontend: http://localhost:${PORT}/`);
     });
   })
-  .catch(err => {
+  .catch((err) => {
     console.error("❌ Error during Data Source initialization:", err);
   });
