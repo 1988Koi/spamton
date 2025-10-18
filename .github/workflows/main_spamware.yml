@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -28,7 +28,7 @@ jobs:
           npm install
           npm run build --if-present
           npm run test --if-present
-      
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
@@ -51,13 +51,13 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FAD487E318F24F578944024436F18FE4 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_254FB209CD404744A58F7A55AB1D077C }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_47D46A1C613A4611B864C0817BDD4BD7 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4B496754D5F242F6B2818F867C03BF61 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_81AA2A6EF3204D4F9125D156C712ED83 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CE5775485F664CD69DE543A90456AC1B }}
 
       - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
         with:
           app-name: 'spamware'
           slot-name: 'Production'
